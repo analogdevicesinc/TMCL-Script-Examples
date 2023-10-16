@@ -1,0 +1,63 @@
+//This programs demontrates how to implement an application containing
+//one or more parallel door contacts, e.g. automatic rolling window
+//shutter. The movement of the rolling window shutter stops as soons as
+//the door contact is closed (window is open). The movement continues
+//right after the windows is closed again. This implementation uses
+//the velocity mode as operation mode as operation mode.
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+vmax = 2000						//max. speed (0 ... 2047)
+amax = 1000						//max. acceleration (0 ... 2047)
+cmax = 100						//max. current (0 ... 255)
+doorContact = 0 				//define input number for door contact
+
+// *** Initialization / Set up axis parameter *** //
+SAP 1, 0, 0    					//set actual position to 0
+SAP 5, 0, amax					//set max. acceleration
+SAP 6, 0, cmax    				//set max. current
+
+// *** Configure interrupt *** //
+VECT 39, Inp0change 			//define the interrupt vector
+SGP 39, 3, 3   					//configure interrupt to trigger on both edges of input 0
+EI 39 							//enable this interrupt
+EI 255 							//globally switch on interrupt processing
+
+
+// *** Initial check *** //
+startCheck: 					//before starting any movements check if door is open
+   	GIO doorContact, 0 			//read input 0
+   	JC ZE, startCheck 			//check again
+
+// *** Main Loop *** //
+loop:
+	GAP 1, 0					//get current position
+	COMP 512000					//compare current position with 512000
+	JC GE, turnLeft				//jump to turnLeft if greater or equal
+	COMP 0						//compare current position with 0
+	JC LE, turnRight			//jump to turnRight if less or equal
+	JA loop						//jump to loop
+turnLeft:
+	ROL 0, vmax 				//turn motor left at vmax
+	JA loop						//jump to loop
+turnRight:
+	ROR 0, vmax					//turn motor right at vmax
+	JA loop						//jump to loop
+
+// *** Interrupt routine *** //
+Inp0change:  
+   	GIO doorContact, 0 			//read input 0
+	JC NZ, end 					//jump to end if not zero
+	GAP 2, 0 					//else read out next speed [int] of motor 0
+    AGP 0, 2 					//store position in user variable 0
+	MST 0              			//stop motor 0
+wait:  							//wait for the door to be closed
+    GIO doorContact, 0 			//read out input 0
+    JC ZE, wait 				//jump to enable if not zero         
+enable:    						//start motors after door is closed
+	GGP 0, 2 					//read user variable 0
+	AAP 2, 0 					//change velocity to the value stored in user variable 0
+end:   
+   	RETI    					//END of interrupt

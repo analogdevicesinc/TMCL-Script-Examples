@@ -1,0 +1,42 @@
+﻿//This program demonstrates the usage of coolStep™.
+//Motor 0 will run at 1/4 of the max. current set by SAP 6. The parameters
+//esp. the stallGuardValue and the settings for coolStep have to be adjusted
+//for a smooth run of the program.
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+vmax = 2000							//max. speed (0 ... 2047)
+amax = 1000							//max. acceleration (0 ... 2047)
+cmax = 100							//max. current (0 ... 255)
+stallGuardValue = 3  				//-64 = highest sensitivity ... 63 = lowest sensitivity
+coolStepThresholdSpeed = 1000		//min. speed for coolStep™ (0 ... 2047)
+coolStepHysteresisWidth = 5     	//coolStep™ hysteresis width (0 ... 15)
+coolStepHysteresisStart = 1			//coolStep™ hysteresis start (0 ... 15)
+coolStepUpStep	= 3					//coolStep™ up step setting (0 .. 3): 0 = tiny ... 3 = large
+coolStepDownStep = 3				//coolStep™ down step setting (0 ... 3): 0 = slow ... 3 = very fast
+
+// *** Interrupt initialization *** //
+SAP 5, 0, amax						//set max. acceleration
+SAP 6, 0, cmax    					//set max. current
+
+// *** stallGuard™ initialization *** //
+SAP 173, 0, 0    					//set stallGuard™ filter disable: 0 = disable, 1 = enable
+SAP 174, 0, stallGuardValue  		//stallGuard™ threshold
+SAP 181, 0, 1000  					//min. speed for motor to be stopped by stallGuard™
+
+// *** coolStep™ initialization *** //
+SAP 168, 0, 1    					//set coolStep™ minimum current setting: 0 = 1/2, 1 = 1/4
+SAP 169, 0, coolStepDownStep		//set coolStep™ down step setting
+SAP 170, 0, coolStepHysteresisWidth	//set coolStep™ hysteresis width
+SAP 171, 0, coolStepUpStep    		//set coolStep™ up step setting
+SAP 172, 0, coolStepHysteresisStart	//set coolStep™ hysteresis start
+SAP 182, 0, coolStepThresholdSpeed	//set coolStep™ threshold speed
+SAP 183, 0, 100    					//set coolStep™ slow run current
+
+// *** Main Loop *** //
+loop:
+	ROR 0, vmax						//turn motor right at vmax
+	JA loop							//jump to loop
+	JA loop							//jump to loop

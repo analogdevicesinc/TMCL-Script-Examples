@@ -1,0 +1,71 @@
+//=== motor/module settings ===
+SAP 253, 0, 8    	// motor poles
+SAP 6, 0, 10000   	// max torque [mA]
+SAP 177, 0, 1500 	// start current
+SAP 252, 0, 0 		// hall interpolation off
+SAP 254, 0, 0    	// hall direction
+
+//=== encoder settings ===
+SAP 250, 0, 4000	// encoder steps
+SAP 251, 0, 0 		// encoder direction
+SAP 249, 0, 1   	// init encoder mode    (use hall signals for encoder initialization)
+SAP 241, 0, 300 	// init encoder speed
+
+//=== motion settings ===
+SAP 4, 0, 4000 		// max ramp velocity
+SAP 11, 0, 2000 	// acceleration
+SAP 146, 0, 1 		// enable velocity ramp
+SAP 7, 0, 500 		// target reached velocity [rpm]
+SAP 9, 0, 5 		// motor halted velocity [rpm]
+SAP 10, 0, 5 		// target reached distance
+
+//=== current PID values ===
+SAP 172, 0, 500 // P
+SAP 173, 0, 500 // I
+
+//=== velocity PID values ===
+SAP 234, 0, 1000 // P
+SAP 235, 0, 1000 // I
+
+//=== position PID values ===
+SAP 230, 0, 300 // P
+
+// === the test programm ===
+
+//SGP 77, 0, 1  // start tmcl application after power up
+
+SAP 159, 0, 0    // set commutation mode to FOC based on hall signals
+
+// limit switch test
+RepeatLimitSwitchTest:
+
+   
+    // wait until right switch is active
+    CheckSwitchAReached:
+		GIO 0, 1        // get adc_in_0 value
+		CALC DIV, 16
+		CALCX LOAD      // load value to X register and show the value in the status bar
+		AAP 2, 0		// rotate motor in right direction
+
+        GIO 0, 0        // is right switch active?
+        COMP 1          // compare needed for JC
+        JC EQ, CheckSwitchAReached
+
+    ROL 0, 2000 // rotate motor in left direction
+        
+    // wait until left switch is active
+    CheckSwitchBReached:
+		GIO 0, 1        // get adc_in_0 value
+		CALC DIV, 16
+         CALC MUL, -1
+		CALCX LOAD      // load value to X register and show the value in the status bar
+		AAP 2, 0		// rotate motor in right direction
+
+        GIO 1, 0        // is left switch active?
+        COMP 1          // compare needed for JC
+        JC EQ, CheckSwitchBReached
+
+    JA RepeatLimitSwitchTest
+
+// end of this script
+STOP

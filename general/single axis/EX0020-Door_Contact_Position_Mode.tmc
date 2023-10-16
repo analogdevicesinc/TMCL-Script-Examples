@@ -1,0 +1,55 @@
+//This programs demontrates how to implement an application containing
+//one or more parallel door contacts, e.g. automatic rolling window
+//shutter. The movement of the rolling window shutter stops as soons as
+//the door contact is closed (window is open). The movement continues
+//right after the windows is closed again. This implementation uses
+//the position mode as operation mode as operation mode.
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+vmax = 2000						//max. speed (0 ... 2047)
+amax = 1000						//max. acceleration (0 ... 2047)
+cmax = 100						//max. current (0 ... 255)
+doorContact = 0 				//define input number for door contact
+
+// *** Initialization / Set up axis parameter *** //
+SAP 1, 0, 0    					//set actual position to 0
+SAP 4, 0, vmax   				//set max. positioning speed
+SAP 5, 0, amax					//set max. acceleration
+SAP 6, 0, cmax    				//set max. current (0 ... 255)
+
+// *** Configure interrupt *** //
+VECT 39, Inp0change 			//define the interrupt vector
+SGP 39, 3, 3   					//configure interrupt to trigger on both edges of input 0
+EI 39 							//enable this interrupt
+EI 255 							//globally switch on interrupt processing
+
+
+// *** Initial check *** //
+startCheck: 					//before starting any movements check if door is open
+   	GIO doorContact, 0 			//read input 0
+   	JC ZE, startCheck 			//check again
+
+// *** Main Loop *** //
+loop:    
+   	MVP ABS, 0, 512000			//turn motor to absoslute position 512000
+   	WAIT POS, 0, 0				//wait until position reached
+	MVP ABS, 0, 0				//turn motor to absoslute position 0
+	WAIT POS, 0, 0				//wait until position reached
+	JA loop						//jump to loop
+
+// *** Interrupt routine *** //
+Inp0change:  
+   	GIO doorContact, 0 			//read input 0
+	JC NZ, end 					//jump to end if not zero
+    MST 0              			//else stop motor 0         
+wait:  							//wait for the door to be closed
+    GIO doorContact, 0 			//read out input 0
+    JC ZE, wait 				//jump to enable if not zero         
+enable:    						//start motors after door is closed
+    SAP 138, 0, 0 				//motor 0 positioning mode
+end:   
+   	RETI     					//END of interrupt  
+

@@ -1,0 +1,31 @@
+//This program demonstates the usage of the X-register. The motor 0 is performing 10 rotations with
+//velocity 1000 then the program will be stopped.
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+vmax = 2000					//max. speed (0 ... 2047)
+amax = 1000					//max. acceleration (0 ... 2047)
+cmax = 100					//max. current (0 ... 255)
+
+// *** Interrupt initialization *** //
+SAP 4, 0, vmax   			//set max. positioning speed
+SAP 5, 0, amax				//set max. acceleration
+SAP 6, 0, cmax    			//set max. current
+
+CALC LOAD, 1				//load 1 to accu
+CALCX LOAD					//load accu to X-register
+CALC LOAD, 0				//load 0 to accu
+
+
+// *** Main Loop *** //
+loop:
+	MVP REL, 0, 51200		//perform 1 rotation: 51200 = 200 * 256
+	WAIT POS, 0, 0			//wait until postion reached
+	WAIT TICKS, 0, 100		//wait 1 second. 100 * 10ms
+	CALCX ADD				//add X-register to accu
+	COMP 10					//compare accu with 10
+	JC LT, loop				//if greater or equal 10 end program
+	STOP					//end of program

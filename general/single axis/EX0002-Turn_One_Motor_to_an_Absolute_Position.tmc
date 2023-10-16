@@ -1,0 +1,27 @@
+//This program demonstrates how to perform a complete turn using
+//the move to position command.
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+vmax = 1000					//max. speed (0 ... 2047)
+amax = 1000					//max. acceleration (0 ... 2047)
+cmax = 100					//max. current (0 ... 255)
+
+// *** Initialization *** //
+SAP 1, 0, 25600    			//set actual position to 25600
+SAP 4, 0, vmax   			//set max. positioning speed
+SAP 5, 0, amax				//set max. acceleration
+SAP 6, 0, cmax    			//set max. current
+
+// *** Main Loop *** //
+loop:
+	MVP ABS, 0, -25600 		//turn motor to absolute position -25600
+	WAIT POS, 0, 0			//wait until position reached
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+	MVP ABS, 0, 25600		//turn motor to absolute position 25600
+	WAIT POS, 0, 0			//wait until position reached
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+	JA loop					//jump to loop

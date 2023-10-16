@@ -1,0 +1,54 @@
+//=== motor/module settings ===
+SAP 253, 0, 8    	// motor poles
+SAP 6, 0, 4000   	// set max current
+SAP 177, 0, 1500 	// start current
+
+//=== encoder settings ===
+SAP 250, 0, 4096 	// encoder steps
+SAP 251, 0, 0 	// encoder direction
+SAP 249, 0, 1   	// init encoder mode    (use hall signals for encoder initialization)
+SAP 241, 0, 300 	// init encoder speed
+SAP 254, 0, 0   	// hall direction
+
+//=== motion settings ===
+SAP 4, 0, 4000 	// max ramp velocity
+SAP 11, 0, 10000 	// acceleration
+SAP 146, 0, 1 	// enable velocity ramp
+SAP 7, 0, 500 	// target reached velocity
+SAP 10, 0, 5 		// target reached distance
+
+//=== current PID values ===
+SAP 172, 0, 600 	// P
+SAP 173, 0, 600 	// I
+
+//=== velocity PID values ===
+SAP 234, 0, 800 	// P
+SAP 235, 0, 600 	// I
+
+//=== position PID values ===
+SAP 230, 0, 300 	// P
+
+// === the test programm ===
+
+//SGP 77, 0, 1  // start tmcl application after power up
+
+SAP 164, 0, 0   // deactivate left and right stop switch input
+
+SAP 159, 0, 7    // set commutation mode to FOC based on encoder signals
+
+//WAIT TICKS, 0, 100
+
+// limit switch test
+RepeatTest:
+
+        // read adc of velocity rotary switch
+        GIO 0, 1             // get adc value
+        CALC SUB, 1024        // -1023...1024
+        CALC MUL, 4           // -4095...4096
+        CALCX LOAD            // load value to X register and show the value in the status bar
+        AAP 2, 0              // set velocity
+
+    JA RepeatTest
+
+// end of this script
+STOP

@@ -1,0 +1,37 @@
+//This programs demonstrates how to the interupt on an input
+//change. The behaviour of this program is the same as EX0008.
+//Depending on the status of Port IN_0 is motor 0 turning
+//right (IN_0 = 0) or turning left (IN_0 = 1).
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+amax = 1000					//max. acceleration (0 ... 2047)
+vmax = 2000					//max. speed (0 ... 2047)
+cmax = 100					//max. current (0 ... 255)
+
+// *** Initialization / Set up axis parameter *** //
+SAP 5, 0, amax				//set max. acceleration
+SAP 6, 0, cmax    			//set max. current
+
+// *** Interrupt initialization *** //
+VECT 39, changeRotation 	//define the interrupt vector for input change 0 interrupt (IN_0)
+SGP 39, 3, 3 				//configure interrupt to trigger on both edge of input 0 (0=off,1=low-high,2=high-low,3=both)
+EI 39 						//enable input change 0 interrupt (IN_0)
+EI 255 						//globally switch on interrupt processing
+
+// *** Main Loop *** //
+loop:						//infinite loop
+	JA loop					//jump to loop
+
+changeRotation:
+	GIO 0, 0    			//read IN_0
+	COMP 0					//compare with 0
+	JC EQ, turnRight		//if equal jump to turn right
+	ROL 0, vmax				//if not equal turn left at vmax
+	RETI					//end of interrupt
+turnRight:
+	ROR 0, vmax				//turn right at vmax
+	RETI					//end of interrupt

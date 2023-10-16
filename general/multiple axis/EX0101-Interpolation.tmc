@@ -1,0 +1,74 @@
+//This program demonstrates how to move 3 motors to (previously stored)
+//coordinate with and without interpolation. In case of interpolation, 
+//the velocities will be calculated so that all motors reach their target
+//position at the same time. It is important that the maximum accelerations
+//(axis parameter #5) and the ramp and pulse dividers (axis parameters #153
+//and #154) of all axes are set to the same values as otherwise interpolation
+//will not work correctly.
+//For moving multiples motors with MVP COORD the bits 0 ... 5 of the "Motor"
+//parameter define which motorr are to be started. The "Motor" paremter has 
+//then following meaning:
+//Dec:     128      64     32 16  8  4  2  1
+//Bit:      7        6      5  4  3  2  1  0
+//Mea-     w/o 		 w/	    6  5  4  3  2  1
+//ning:	   interpolation	      motor
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that can be adapted *** //
+vmax = 1000					//max. speed (0 ... 2047)
+amax = 1000					//max. acceleration (0 ... 2047)
+cmax = 100					//max. current (0 ... 255)
+
+// *** Initialization / Set up axis parameter *** //
+//Motor 0
+SAP 1, 0, 0	    			//set actual position to 25600
+SAP 4, 0, vmax   			//set max. positioning speed
+SAP 5, 0, amax				//set max. acceleration
+SAP 6, 0, cmax    			//set max. current
+SAP 153, 0, 7    			//set ramp divisor
+SAP 154, 0, 3			    //set pulse divisor
+//Motor 1
+SAP 1, 1, 0	    			//set actual position to 25600
+SAP 4, 1, vmax   			//set max. positioning speed
+SAP 5, 1, amax				//set max. acceleration
+SAP 6, 1, cmax    			//set max. current
+SAP 153, 1, 7    			//set ramp divisor
+SAP 154, 1, 3			    //set pulse divisor
+//Motor 2
+SAP 1, 2, 0	    			//set actual position to 25600
+SAP 4, 2, vmax   			//set max. positioning speed
+SAP 5, 2, amax				//set max. acceleration
+SAP 6, 2, cmax    			//set max. current
+SAP 153, 2, 7    			//set ramp divisor
+SAP 154, 2, 3			    //set pulse divisor
+
+// *** Define Coordinates *** //
+SCO 0, 0, 0					//set coordinate 0 for motor 0
+SCO 0, 1, 0					//set coordinate 0 for motor 1
+SCO 0, 2, 0					//set coordinate 0 for motor 2
+SCO 1, 0, 51200				//set coordinate 1 for motor 0
+SCO 1, 1, 102400			//set coordinate 1 for motor 1
+SCO 1, 2, 153600			//set coordinate 1 for motor 2
+
+// *** Main Loop *** //
+loop:
+	MVP COORD, 135, 1		//move motors 0, 1 and 2 to coordinate 1, w/o interpolation: 128 + 1 + 2 + 4
+	CSUB waitForAll			//jump to waitForAll
+	MVP COORD, 135, 0		//move motors 0, 1 and 2 to coordinate 0, w/o interpolation: 128 + 1 + 2 + 4
+	CSUB waitForAll			//jump to waitForAll
+	MVP COORD, 71, 1		//move motors 0, 1 and 2 to coordinate 1, w/ interpolation: 64 + 1 + 2 + 4
+	CSUB waitForAll			//jump to waitForAll
+	MVP COORD, 71, 0		//move motors 0, 1 and 2 to coordinate 0, w/ interpolation: 64 + 1 + 2 + 4
+	CSUB waitForAll			//jump to waitForAll
+	JA loop
+
+// *** waitForAll subroutine *** //
+waitForAll:
+	WAIT POS, 0, 0			//wait until motor 0 reached position
+	WAIT POS, 1, 0			//wait until motor 1 reached position
+	WAIT POS, 2, 0			//wait until motor 2 reached position
+	WAIT TICKS, 0, 50		//wait for 0.5 seconds. 50 * 10ms
+	RSUB

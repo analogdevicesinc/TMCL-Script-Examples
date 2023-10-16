@@ -1,0 +1,54 @@
+//=== define constant values ===
+POSITION_END_FLAG = $00004000 // Bit 14
+
+// motor settings
+SAP 6, 0, 2000 	// max current [mA](peak)
+SAP 177, 0, 1000 	// start current [mA](peak)
+SAP 253, 0, 8 	// motor poles
+
+// encoder settings
+SAP 249, 0, 0 	// encoder init mode 
+SAP 250, 0, 4000 	// encoder steps 
+SAP 251, 0, 0 	// encoder direction 
+
+// settings for position end flag
+SAP 7, 0, 500 	// target reached velocity [rpm]
+SAP 9, 0, 5 		// motor halted velocity [rpm]
+SAP 10, 0, 10 	// target reached distance 
+
+// ramp settings
+SAP 4, 0, 4000 	// max velocity [rpm]
+SAP 146, 0, 1 	// enable velocity ramp 
+SAP 11, 0, 4000 	// acceleration [rpm/s]
+
+// PI settings
+SAP 172, 0, 500  	// torque P 
+SAP 173, 0, 500  	// torque I 
+SAP 234, 0, 1000  	// velocity P 
+SAP 235, 0, 1000  	// velocity I 
+SAP 230, 0, 300 	// position P 
+
+// set position as zero position
+SAP 1, 0, 0
+
+// motor commutation with encoder, do encoder initialization with next position command
+SAP 159, 0, 7
+
+Start:
+	MVP ABS, 0, 100000
+	CSUB WaitForPositionReached
+	MVP ABS, 0, 200000
+	CSUB WaitForPositionReached
+	MVP ABS, 0, 300000
+	CSUB WaitForPositionReached
+	JA Start
+
+// subrutine to wait for position reached
+WaitForPositionReached:
+    // wait until position reached flag is set
+    WaitForPosition:
+        GAP 156, 0    					// get status flags
+        CALC AND, POSITION_END_FLAG		// is position end flag set?
+        COMP 0
+        JC EQ, WaitForPosition
+RSUB

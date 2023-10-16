@@ -1,0 +1,25 @@
+//This program demonstrates how to turn one motor for 5 seconds
+//left and then 5 seconds right.
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+vmax = 2000					//max. speed (0 ... 2047)
+amax = 1000					//max. acceleration (0 ... 2047)
+cmax = 100					//max. current (0 ... 255)
+
+// *** Initialization / Set up axis parameter *** //
+SAP 5, 0, amax				//set max. acceleration
+SAP 6, 0, cmax    			//set max. current
+
+// *** Main Loop *** //
+loop:
+	ROL 0, vmax         	//turn motor left
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	ROR 0, vmax         	//turn motor right
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	JA loop					//jump to loop

@@ -1,0 +1,66 @@
+//=== motor/module settings ===
+SAP 253, 0, 8    // motor poles
+SAP 6, 0, 4000   // set max current
+SAP 177, 0, 1500 // start current
+
+//=== encoder/initialization settings ===
+SAP 254, 0, 0    // hall direction
+
+//=== motion settings ===
+SAP 4, 0, 4000    // max ramp velocity
+SAP 11, 0, 2000   // acceleration
+SAP 146, 0, 1     // enable velocity ramp
+SAP 7, 0, 500     // target reached velocity
+SAP 10, 0, 5 	    // target reached distance
+
+//=== current PID values ===
+SAP 172, 0, 600   // P
+SAP 173, 0, 600   // I
+
+//=== velocity PID values ===
+SAP 234, 0, 800 // P
+SAP 235, 0, 600 // I
+
+//=== position PID values ===
+SAP 230, 0, 300	// P
+
+//SGP 77, 0, 1     // start tmcl application after power up
+
+// === the test programm ===
+
+SAP 164, 0, 0             // deactivate left and right stop switch input
+
+WAIT TICKS, 0, 100
+
+SAP 159, 0, 6             // set commutation mode to FOC based on hall sensor signals
+
+WAIT TICKS, 0, 100
+
+SAP 1, 0, 0                 // set position counter to zero
+
+MVP ABS, 0, 0
+WAIT TICKS, 0, 100
+
+// positioning test
+RepeatPositioningTest:
+
+    MVP ABS, 0, 10000
+    CheckPosAReached:
+        GAP 1, 0
+        COMP 9990    // allow a small deviation 
+        JC LT, CheckPosAReached
+
+    WAIT Ticks, 0, 300
+
+    MVP ABS, 0, 0
+    CheckPosBReached:
+        GAP 1, 0
+        COMP 10      // allow a small deviation 
+        JC GT, CheckPosBReached
+
+    WAIT Ticks, 0, 300
+        
+    JA RepeatPositioningTest
+
+// end of this program
+STOP

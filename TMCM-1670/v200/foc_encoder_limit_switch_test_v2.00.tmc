@@ -1,0 +1,78 @@
+// motor settings
+SAP 6, 0, 2000 	// max current [mA](peak)
+SAP 177, 0, 2000 	// start current [mA](peak)
+SAP 253, 0, 8 	// motor poles
+
+// encoder settings
+SAP 249, 0, 0 	// encoder init mode 
+SAP 250, 0, 4096 	// encoder steps 
+SAP 251, 0, 1 	// encoder direction 
+
+// settings for position end flag
+SAP 7, 0, 500 	// target reached velocity [rpm]
+SAP 9, 0, 5 		// motor halted velocity [rpm]
+SAP 10, 0, 10 	// target reached distance 
+
+// ramp settings
+SAP 4, 0, 4000 	// max velocity [rpm]
+SAP 146, 0, 1 	// enable velocity ramp 
+SAP 11, 0, 4000 	// acceleration [rpm/s]
+
+// PI settings
+SAP 172, 0, 1500  	// torque P 
+SAP 173, 0, 1500  	// torque I 
+SAP 234, 0, 2000  	// velocity P 
+SAP 235, 0, 1000  	// velocity I 
+SAP 230, 0, 300 	// position P 
+
+// === the test programm ===
+
+//SGP 77, 0, 1  // start tmcl application after power up
+
+// motor commutation with encoder, do encoder initialization with next position command
+SAP 159, 0, 7
+
+// start motor
+ROR 0, 200
+WAIT TICKS, 0, 100
+
+SAP 163, 0, 1    // clear once: not the encoder but the actual motor position
+SAP 161, 0, 1    // by its null channel.
+
+// the zero position is now excatly at the encoder null channel, but the motor will be
+// stopped a short distance behind this zero position (depending on the speed).
+// if needed, one can now go back to the exact zero position using the following command:
+MVP ABS, 0, 0
+WAIT TICKS, 0, 100
+
+// limit switch test
+RepeatLimitSwitchTest:
+
+    ROR 0, 500 // rotate motor in right direction
+    
+    // wait until right switch is active
+    CheckSwitchAReached:
+        GIO 0, 0        // is right switch active?
+        COMP 1          // compare needed for JC
+        JC EQ, CheckSwitchAReached
+
+    WAIT TICKS, 0, 100
+    MVP REL, 0, 0 // hold actual position (ramp velocity dowh and drive back to this position)
+    WAIT TICKS, 0, 500
+
+    ROL 0, 500 // rotate motor in left direction
+        
+    // wait until left switch is active
+    CheckSwitchBReached:
+        GIO 1, 0        // is left switch active?
+        COMP 1          // compare needed for JC
+        JC EQ, CheckSwitchBReached
+
+    WAIT TICKS, 0, 100
+    MVP REL, 0, 0 // hold actual position (ramp velocity dowh and drive back to this position)
+    WAIT TICKS, 0, 500
+
+    JA RepeatLimitSwitchTest
+
+// end of this script
+STOP

@@ -1,0 +1,35 @@
+//This programs demonstrates how to group motors. Motor 0 and
+//motor 1 are added to group 1. Both motors are turning left
+//for 5 seconds then right for 5 seconds then again left and so
+//on.
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+amax = 1000					//max. acceleration (0 ... 2047)
+vmax = 2000					//max. speed (0 ... 2047)
+cmax = 100					//max. current (0 ... 255)
+
+// *** Initialization / Set up axis parameter *** //
+//Motor 0
+SAP 5, 0, amax				//set max. acceleration
+SAP 6, 0, cmax    			//set max. current
+SAP 213, 0, 1				//add motor 0 to group 1
+//Motor 1
+SAP 5, 1, amax				//set max. acceleration
+SAP 6, 1, cmax    			//set max. current
+SAP 213, 1, 1				//add motor 1 to group 1
+
+// *** Main Loop *** //
+loop:
+	ROL 0, vmax				//turn motor 0 left at vmax (motor 1 is turning as well: same group)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	ROR 0, vmax				//turn motor 0 right at vmax (motor 1 is turning as well: same group)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms 
+	ROL 1, vmax				//turn motor 1 left at vmax (motor 0 is turning as well: same group)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	ROR 1, vmax				//turn motor 1 right at vmax (motor 0 is turning as well: same group)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms 
+	JA loop					//jump to loop

@@ -1,0 +1,72 @@
+//This program demonstrates how to turn a motor at the same speed (~1 RPS)
+//with different microstep resolutions.
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+vmax = 1000					//max. speed (0 ... 2047)
+amax = 1000					//max. acceleration (0 ... 2047)
+cmax = 100					//max. current (0 ... 255)
+
+// *** Initialization / Set up axis parameter *** //
+SAP 6, 0, cmax    			//set max. current
+
+// *** Main Loop ***
+loop:
+	SAP 140, 0, 8			//set microstep resolution to 256
+	ROL 0, 1792				//turn motor left at 1792 (~1 RPS)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+
+	SAP 140, 0, 7			//set 128 micorsteps
+	ROL 0, 896				//turn motor left at 896 = 1792/2 (~1 RPS)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+
+	SAP 140, 0, 6			//set microstep resolution to 64
+	ROL 0, 448				//turn motor left at 448 = 1792/4 (~1 RPS)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+
+	SAP 140, 0, 5			//set microstep resolution to 32
+	ROL 0, 224				//turn motor left at 224 = 1792/8 (~1 RPS)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+
+	SAP 140, 0, 4			//set microstep resolution to 16
+	ROL 0, 112				//turn motor left at 112 = 1792/16 (~1 RPS)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+
+	SAP 140, 0, 3			//set microstep resolution to 8
+	ROL 0, 56				//turn motor left at 56 = 1792/32 (~1 RPS)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+
+	SAP 140, 0, 2			//set microstep resolution to 4
+	ROL 0, 28				//turn motor left at 28 = 1792/64 (~1 RPS)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+
+	SAP 140, 0, 1			//set microstep resolution to 2 (half step)
+	ROL 0, 14				//turn motor left at 14 = 1792/128 (~1 RPS)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+
+	SAP 140, 0, 0			//set microstep resolution to 1 (full step)
+	ROL 0, 7				//turn motor left at 7 = 1792/256 (~1 RPS)
+	WAIT TICKS, 0, 500		//wait 5 seconds. 500 * 10ms
+	MST 0					//stop motor
+	WAIT TICKS, 0, 200		//wait 2 seconds. 200 * 10ms
+	
+	JA loop					//jump to loop

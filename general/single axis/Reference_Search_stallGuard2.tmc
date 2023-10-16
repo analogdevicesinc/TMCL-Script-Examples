@@ -1,0 +1,35 @@
+// *** Values that have to be adapted *** //
+stallGuardValue = 2  			//-64 = highest sensitivity ... 63 = lowest sensitivity
+vmax = 2000						//max. speed (0 ... 2047)
+amax = 1000						//max. acceleration (0 ... 2047)
+cmax = 100						//max. current (0 ... 255)
+
+// *** Initialization / Set up axis parameter *** //
+SAP 4, 0, vmax   				//set max. positioning speed
+SAP 5, 0, amax					//set max. acceleration
+SAP 6, 0, cmax    				//set max. current
+
+// *** stallGuard™ initialization *** //
+SAP 173, 0, 0    				//set stallGuard™ filter disable
+SAP 174, 0, stallGuardValue  	//stallGuard™ threshold
+SAP 181, 0, 1900  				//min. speed for motor to be stopped by stallGuard™
+
+ROL 0, vmax
+WAIT TICKS, 0, 1
+loopSearchRight:
+	GAP 3, 0					//get current speed
+	JC NZ, loopSearchRight	    //jump to loopSearchRight if speed not zero
+	SAP 1, 0, 0    			    //reset actual position to 0
+	WAIT TICKS, 0, 100
+
+WAIT TICKS, 0, 1
+ROR 0, vmax
+loopSearchLeft:
+	GAP 3, 0					//get current speed
+	JC NZ, loopSearchLeft	    //jump to loopSearchRight if speed not zero
+	GAP 1, 0					//get actual position
+	AGP 0, 2    				//store actual position (end position) in user variable #0
+	STOP
+
+
+	

@@ -1,0 +1,48 @@
+//This program demonstrates how to perform a reference search with
+//motor 0. The program stops either when the reference search is
+//finished or when the timeout limit is reached. In case the timeout
+//limit is reached, the reference search is stopped and the Port 
+//OUT_0 is set high before ending the program. In the easiest case
+//connect an LED to Port AIN_0.
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+amax = 1000					//max. acceleration (0 ... 2047)
+cmax = 100					//max. current (0 ... 255)
+vsearch = 1000				//reference search speed (0 ... 2047)
+vswitch = 100				//reference switch speed (0 ... 2047)
+searchMode = 1				//reference search mode
+tmax = 100					//max. time in 10ms for reference search to be finished
+
+// *** Initialization / Set up axis parameter *** //
+SAP 5, 0, amax				//set max. acceleration
+SAP 6, 0, cmax    			//set max. current
+
+SIO 0, 0, 1					//activate pull-up resistors for N.C. switches
+
+// *** Reference search initialization *** //
+SAP 12, 0, 0				//set right limit switch disable
+SAP 13, 0, 0				//set left limit switch disable
+SAP 149, 0, 1				//set soft stop flag: 0 = hard stop, 1 = soft stop
+SAP 193, 0, searchMode		//set refenrece search mode
+SAP 194, 0, vsearch			//set reference search speed
+SAP 195, 0, vswitch			//set reference switch speed
+
+SIO 0, 2, 0 				//switch OUT_0 low
+
+// *** Main Program *** //
+RFS START, 0				//start reference search
+WAIT RFS, 0, 1000			//wait until RFS is done or timeout happend after tmax * 10ms
+JC ETO, RefErr				//jump to RefErr if timeout occurs
+STOP 						//end of Program
+
+// *** Timeout subroutine *** //
+RefErr:
+	CLE 1					//delete Timeout-Flag
+	RFS STOP, 0				//stop reference search
+	SIO 0, 2, 1 			//switch OUT_0 high
+	STOP	
+	

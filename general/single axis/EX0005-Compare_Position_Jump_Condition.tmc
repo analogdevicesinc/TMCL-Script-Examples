@@ -1,0 +1,27 @@
+//This program demonstrates how to compare the position of motor 0 with a
+//value and do a jump if condition. The motor is performing 5 rotations
+//with velocity 1000 then the program will be stopped.
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+vmax = 2000					//max. speed (0 ... 2047)
+amax = 1000					//max. acceleration (0 ... 2047)
+cmax = 100					//max. current (0 ... 255)
+
+// *** Initialization / Set up axis parameter *** //
+SAP 1, 0, 0    				//reset actual position to 0
+SAP 5, 0, amax				//set max. acceleration
+SAP 6, 0, cmax    			//set max. current
+
+ROR 0, vmax					//turn motor 0 right with velocity vmax
+
+// *** Main Loop *** //
+loop:
+	GAP 1, 0				//get current position
+	COMP 256000				//compare with 256000 = 5 rotations = 200 * 256 * 5
+	JC LT, loop				//jump to loop if lower than 256000 
+	MST 0					//stop motor if greater or equal 256000
+	STOP					//end of program

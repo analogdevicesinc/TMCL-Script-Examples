@@ -1,0 +1,26 @@
+//This program demonstrates how to read an analog value and adjust the
+//velocity of motor 0.
+//The velocity depends on the analog value obtained at Port AIN_0. In
+//the easiest case connect a pontiometer to Port AIN_0.
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+amax = 1000				//max. acceleration (0 ... 2047)
+cmax = 100				//max. current (0 ... 255)
+
+// *** Initialization / Set up axis parameter *** //
+SAP 5, 0, amax			//set max. acceleration
+SAP 6, 0, cmax    		//set max. current
+
+MST 0					//switch to velocity mode
+
+// *** Main Loop *** //
+loop:
+	GIO 0, 1    		//get 12 bit analog value of AIN_0 (0 ... 4095) and store in the accumulator
+	CALC DIV, 2			//divide analog value by 2 and store in the accumulator
+	AAP 2, 0			//change the velocity (0 ... 2047) to the value stored in the accumulator
+	JA loop				//jump to loop
+	

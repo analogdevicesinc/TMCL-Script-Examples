@@ -1,0 +1,55 @@
+
+//=== motor/module settings ===
+SAP 14, 0, 3		// motor type BLDC
+SAP 10, 0, 4    	// motor poles
+SAP 11, 0, 5000   	// max current [mA](RMS)
+SAP 12, 0, 2000 	// open loop current
+
+//=== encoder settings ===
+SAP 100, 0, 4096 	// encoder steps 
+SAP 101, 0, 1 	// encoder direction 
+SAP 102, 0, 0 	// encoder init mode 
+SAP 56, 0, 4096	// use position scaler
+
+//=== motion settings ===
+SAP 43, 0, 3000 	// max ramp velocity
+SAP 44, 0, 4000 	// acceleration
+SAP 45, 0, 1 		// enable velocity ramp
+SAP 53, 0, 5 		// position reached distance
+SAP 54, 0, 500	// position reached velocity [rpm]
+
+//=== current PI values ===
+SAP 70, 0, 300 	// P
+SAP 71, 0, 300 	// I
+
+//=== velocity PI values ===
+SAP 72, 0, 300	// P
+SAP 73, 0, 100	// I
+
+//=== position P value ===
+SAP 74, 0, 8  	// P
+
+// === the test programm ===
+
+// clear actual position (use actual position as zero position)
+SAP 52, 0, 0
+
+// set commutation mode to FOC based on digital encoder
+SAP 15, 0, 3    
+
+WAIT TICKS, 0, 300
+
+Start:
+	MVP ABS, 0, 100000
+	WAIT POS, 0, 100000
+
+	MVP ABS, 0, 200000
+	WAIT POS, 0, 200000
+
+	MVP ABS, 0, 300000
+	WAIT POS, 0, 300000
+
+	JA Start
+
+// end of this script
+STOP

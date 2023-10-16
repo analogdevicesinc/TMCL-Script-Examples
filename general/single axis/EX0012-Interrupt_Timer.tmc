@@ -1,0 +1,32 @@
+//This program demonstrates how to use the timer interrupt.
+//To use this program connect LEDs to OUT_0 and OUT_1. The LED at Port
+//OUT_1 is toggling at 2 Hz using the WAIT command. The LED at Port OUT_0
+//is toggling at 1 Hz using the timer interrupt.
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Interrupt initialization *** //
+VECT 0, Timer0Irq 		//defines the interrupt vector for the timer 0 interrupt
+SGP 0, 3, 1000 			//configure the timer interrupt: set its period to 1000ms
+EI 0 					//enable timer interrupt
+EI 255 					//globally switch on interrupt processing
+
+// *** Main Loop *** //
+loop:
+	SIO 1, 2, 1     	//switch OUT_1 high
+	WAIT TICKS, 0, 50	//wait 0.5 seconds. 50 * 10ms
+	SIO 1, 2, 0			//switch OUT_1 low
+	WAIT TICKS, 0, 50	//wait 0.5 seconds. 50 * 10ms
+	JA loop				//jump to loop
+	
+// *** Interrupt routine *** //
+Timer0Irq:
+	GIO 0, 2 			//check if OUT_0 is high
+	JC NZ, Out0Off		//jump to Out0off if high
+	SIO 0, 2, 1 		//switch OUT_0 high
+	RETI 				//end of interrupt
+Out0Off:
+	SIO 0, 2, 0 		//switch OUT_0 low
+	RETI 				//end of interrupt

@@ -1,0 +1,18 @@
+//This program demonstrates how to implement a for loop
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+SGP 0, 2, 0    //set user variable #0
+//for Loop
+forLoop:
+	// add your code here //
+	GGP 0, 2	   //get user variable #0 to accu
+	CALC ADD, 1    //add 1 to accu
+	AGP 0, 2       //accu to user variable #0
+	COMP 5		   //amount of loops
+	JC LE, forLoop //jump to label forLoop
+
+STOP
+	

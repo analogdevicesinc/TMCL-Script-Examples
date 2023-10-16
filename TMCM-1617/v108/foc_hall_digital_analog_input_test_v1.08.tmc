@@ -1,0 +1,67 @@
+
+//=== motor/module settings ===
+SAP 14, 0, 3		// motor type BLDC
+SAP 10, 0, 4    	// motor poles
+SAP 11, 0, 5000   	// max current [mA](RMS)
+SAP 12, 0, 2000 	// open loop current
+
+//=== hall sensor settings ===
+SAP 90, 0, 1		// hall polarity
+SAP 91, 0, 0		// hall direction
+SAP 92, 0, 1		// hall interpolation on
+
+//=== motion settings ===
+SAP 43, 0, 3000 	// max ramp velocity
+SAP 44, 0, 1000 	// acceleration
+SAP 45, 0, 1 		// enable velocity ramp
+SAP 53, 0, 5 		// position reached distance
+SAP 54, 0, 500	// position reached velocity [rpm]
+
+//=== current PI values ===
+SAP 70, 0, 300 	// P
+SAP 71, 0, 300 	// I
+
+//=== velocity PI values ===
+SAP 72, 0, 300	// P
+SAP 73, 0, 100	// I
+
+//=== position P value ===
+SAP 74, 0, 50  	// P
+
+// === the test programm ===
+
+// start tmcl application after power up
+SGP 77, 0, 1
+
+// set commutation mode to FOC based on hall signals
+SAP 15, 0, 2    
+
+// limit switch test
+RepeatLimitSwitchTest:
+
+   
+    // wait until right switch is active
+    CheckSwitchAReached:
+		GIO 0, 1        	// get adc_in_0 value
+		CALCX LOAD      	// load value to X register and show the value in the status bar
+		AAP 40, 0			// rotate motor in right direction
+
+        GIO 0, 0        	// is GPIO_0 switch active?
+        COMP 0          	// compare needed for JC
+        JC EQ, CheckSwitchAReached
+
+    // wait until left switch is active
+    CheckSwitchBReached:
+		GIO 0, 1        	// get adc_in_0 value
+		CALC MUL, -1
+		CALCX LOAD  		// load value to X register and show the value in the status bar
+		AAP 40, 0			// rotate motor in right direction
+
+		GIO 1, 0        	// is GPIO_1 switch active?
+		COMP 0          	// compare needed for JC
+		JC EQ, CheckSwitchBReached
+
+    JA RepeatLimitSwitchTest
+
+// end of this script
+STOP

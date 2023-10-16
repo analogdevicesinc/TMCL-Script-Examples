@@ -1,0 +1,47 @@
+//This program demonstrates the stall detection with stallGuard2™.
+//Motor 0 will run until it is stalled, then MCL program flow will be
+//interrupted and the interrupt handling routine (here: returnToZero) will be called.
+//After the detection of a stall the motor will run to postion zero.
+//For more details concerning stallGuard2™ look at 
+//Application Note 002 - StallGuard™ - http://www.trinamic.com/design-center/application-notes
+//and https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Values that have to be adapted *** //
+stallGuardValue = 2  			//-64 = highest sensitivity ... 63 = lowest sensitivity
+vmax = 2000						//max. speed (0 ... 2047)
+amax = 1000						//max. acceleration (0 ... 2047)
+cmax = 100						//max. current (0 ... 255)
+
+// *** Initialization / Set up axis parameter *** //
+SAP 1, 0, 0    					//reset actual position to 0
+SAP 4, 0, vmax   				//set max. positioning speed
+SAP 5, 0, amax					//set max. acceleration
+SAP 6, 0, cmax    				//set max. current
+
+// *** stallGuard™ initialization *** //
+SAP 173, 0, 1    				//set stallGuard™ filter disable
+SAP 174, 0, stallGuardValue  	//stallGuard™ threshold
+SAP 181, 0, 1900  				//min. speed for motor to be stopped by stallGuard™
+
+// *** Interrupt initialization *** //
+VECT 15, returnToZero 			//defines the interrupt vector for the stallGuard™ interrupt
+EI 15 							//enable stall interrupt
+EI 255 							//globally switch on interrupt processing
+
+// *** Main Loop *** //
+loop:
+	GAP 3, 0					//get current speed
+	JC NZ, loop					//jump to loop if speed not zero
+	ROL 0, vmax					//turn motor left at vmax
+	JA loop						//jump to loop
+
+// *** Interrupt routine *** //
+returnToZero:
+	MVP ABS, 0, 0				//turn motor 0 to postion zero
+	WAIT POS, 0, 0				//wait until position zero reached
+	WAIT TICKS, 0, 500			//wait 5 seconds. 500 * 10ms
+	RETI						//end of interrupt
+

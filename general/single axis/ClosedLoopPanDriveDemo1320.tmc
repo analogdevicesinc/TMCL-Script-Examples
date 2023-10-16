@@ -1,0 +1,22 @@
+//Demo für TMCM-1320
+ClInit:
+	SAP 129, 0, 1
+	GAP 133, 0
+	JC ZE, ClInit
+	MVP ABS, 0, 0
+	WAIT POS, 0, 0
+	SAP 6, 0, 255
+
+Loop:
+    //slowly left and right with pause
+	SAP 4, 0, 51200
+	SAP 5, 0, 51200
+	SAP 17, 0, 51200
+	MVP ABS, 0, 51200*5
+	WAIT POS, 0, 0
+	WAIT TICKS, 0, 200
+	MVP ABS, 0, 0
+	WAIT POS, 0, 0
+	WAIT TICKS, 0, 500
+
+	JA Loop

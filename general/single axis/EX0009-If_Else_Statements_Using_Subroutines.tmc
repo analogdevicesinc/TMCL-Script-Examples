@@ -1,0 +1,23 @@
+//This program demonstrates how to implement an if-else-statement
+//by using subroutines. The LED at Port OUT_0 is toggling at 1 Hz
+//For more details look at https://www.trinamic.com/support/software/tmcl-ide/
+//
+//Before use: Restore Factory Defaults
+//(MN 19.05.2015)
+
+// *** Main Loop *** //
+loop:
+	CSUB ifStatement	
+	WAIT TICKS, 0, 100	//wait 1 second. 100 * 10ms
+	JA loop				//jump to loop
+
+// *** begin (if-else-statement) *** //
+ifStatement:
+	GIO 0, 2			//check state of OUT_0
+	JC NZ, Out0Off		//if OUT_0 = high, jump to Out0Off else continue
+	SIO 0, 2, 1 		//switch OUT_0 high
+	RSUB 				//end of subroutine
+Out0Off:
+	SIO 0, 2, 0 		//switch OUT_0 low
+	RSUB 				//end of subroutine
+// *** end (if-eslse-statement) *** //
