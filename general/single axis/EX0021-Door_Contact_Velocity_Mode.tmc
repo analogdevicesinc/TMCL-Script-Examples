@@ -1,3 +1,11 @@
+//===============================================================================
+// Copyright © 2015 TRINAMIC Motion Control GmbH & Co. KG
+// (now owned by Analog Devices Inc.),
+//
+// Copyright © 2023 Analog Devices Inc. All Rights Reserved. This software is
+// proprietary & confidential to Analog Devices, Inc. and its licensors.
+//===============================================================================
+
 //This programs demontrates how to implement an application containing
 //one or more parallel door contacts, e.g. automatic rolling window
 //shutter. The movement of the rolling window shutter stops as soons as
@@ -6,7 +14,6 @@
 //the velocity mode as operation mode as operation mode.
 //
 //Before use: Restore Factory Defaults
-//(MN 19.05.2015)
 
 // *** Values that have to be adapted *** //
 vmax = 2000						//max. speed (0 ... 2047)

@@ -1,3 +1,11 @@
+//===============================================================================
+// Copyright © 2015 TRINAMIC Motion Control GmbH & Co. KG
+// (now owned by Analog Devices Inc.),
+//
+// Copyright © 2023 Analog Devices Inc. All Rights Reserved. This software is
+// proprietary & confidential to Analog Devices, Inc. and its licensors.
+//===============================================================================
+
 //This program demonstrates how to move 3 motors to (previously stored)
 //coordinate with and without interpolation. In case of interpolation, 
 //the velocities will be calculated so that all motors reach their target
@@ -15,7 +23,6 @@
 //For more details look at https://www.trinamic.com/support/software/tmcl-ide/
 //
 //Before use: Restore Factory Defaults
-//(MN 19.05.2015)
 
 // *** Values that can be adapted *** //
 vmax = 1000					//max. speed (0 ... 2047)

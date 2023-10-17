@@ -1,9 +1,16 @@
+//===============================================================================
+// Copyright © 2015 TRINAMIC Motion Control GmbH & Co. KG
+// (now owned by Analog Devices Inc.),
+//
+// Copyright © 2023 Analog Devices Inc. All Rights Reserved. This software is
+// proprietary & confidential to Analog Devices, Inc. and its licensors.
+//===============================================================================
+
 //This program demonstrates how to implement an if-else-statement
 //by using subroutines. The LED at Port OUT_0 is toggling at 1 Hz
 //For more details look at https://www.trinamic.com/support/software/tmcl-ide/
 //
 //Before use: Restore Factory Defaults
-//(MN 19.05.2015)
 
 // *** Main Loop *** //
 loop:

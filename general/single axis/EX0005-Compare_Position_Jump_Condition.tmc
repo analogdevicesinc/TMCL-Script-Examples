@@ -1,10 +1,17 @@
+//===============================================================================
+// Copyright © 2015 TRINAMIC Motion Control GmbH & Co. KG
+// (now owned by Analog Devices Inc.),
+//
+// Copyright © 2023 Analog Devices Inc. All Rights Reserved. This software is
+// proprietary & confidential to Analog Devices, Inc. and its licensors.
+//===============================================================================
+
 //This program demonstrates how to compare the position of motor 0 with a
 //value and do a jump if condition. The motor is performing 5 rotations
 //with velocity 1000 then the program will be stopped.
 //For more details look at https://www.trinamic.com/support/software/tmcl-ide/
 //
 //Before use: Restore Factory Defaults
-//(MN 19.05.2015)
 
 // *** Values that have to be adapted *** //
 vmax = 2000					//max. speed (0 ... 2047)

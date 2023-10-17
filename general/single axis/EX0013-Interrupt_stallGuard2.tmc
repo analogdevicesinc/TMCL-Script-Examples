@@ -1,3 +1,11 @@
+//===============================================================================
+// Copyright © 2015 TRINAMIC Motion Control GmbH & Co. KG
+// (now owned by Analog Devices Inc.),
+//
+// Copyright © 2023 Analog Devices Inc. All Rights Reserved. This software is
+// proprietary & confidential to Analog Devices, Inc. and its licensors.
+//===============================================================================
+
 //This program demonstrates the stall detection with stallGuard2™.
 //Motor 0 will run until it is stalled, then MCL program flow will be
 //interrupted and the interrupt handling routine (here: returnToZero) will be called.
@@ -7,7 +15,6 @@
 //and https://www.trinamic.com/support/software/tmcl-ide/
 //
 //Before use: Restore Factory Defaults
-//(MN 19.05.2015)
 
 // *** Values that have to be adapted *** //
 stallGuardValue = 2  			//-64 = highest sensitivity ... 63 = lowest sensitivity
